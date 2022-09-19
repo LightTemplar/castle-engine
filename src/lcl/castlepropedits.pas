@@ -66,6 +66,7 @@ uses // FPC and LCL units
 {$I castlepropedits_number.inc}
 {$I castlepropedits_exposetransforms.inc}
 {$I castlepropedits_rangeset.inc}
+{$undef read_implementation}
 
 procedure Register;
 begin

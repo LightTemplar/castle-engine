@@ -82,9 +82,16 @@ begin
   { There's no reason to leave it false, in practice. }
   Result := true;
 
-  if Result then
-    { By the way, do FixApplicationDataInIDE to have good ApplicationDataOverride. }
-    FixApplicationDataInIDE;
+  if CastleDesignMode and
+     (LazarusIDE <> nil) and
+     (LazarusIDE.ActiveProject <> nil) then
+  begin
+    { Override ApplicationData interpretation, and castle-data:/xxx URL meaning.
+      This allows PropertyEditorsAdviceDataDirectory to work
+      inside Lazarus IDE, e.g. when setting TCastleControl.DesignUrl. }
+    ApplicationDataOverride := FilenameToURISafeUTF8(
+      InclPathDelim(LazarusIDE.ActiveProject.Directory) + 'data' + PathDelim);
+  end;
 end;
 
 { TSceneURLPropertyEditor ---------------------------------------------------- }

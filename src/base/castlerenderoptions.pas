@@ -30,6 +30,11 @@ uses Classes, CastleColors;
 {$I castlerenderoptions_renderoptions.inc}
 {$undef read_interface}
 
+type
+
+  T3DCoord = 0..2;
+  T3DCoords = set of T3DCoord;
+
 implementation
 
 uses SysUtils;

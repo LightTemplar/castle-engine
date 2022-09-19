@@ -34,7 +34,7 @@ uses
   DataModuleIcons, ImgList,
   // for TOIPropertyGrid usage
   ObjectInspector, PropEdits, PropEditUtils, GraphPropEdits,
-  CollectionPropEditForm,
+  CollectionPropEditForm, ComponentEditors,
   // CGE units
   CastleControl, CastleUIControls, CastlePropEdits, CastleDialogs,
   CastleSceneCore, CastleKeysMouse, CastleVectors, CastleRectangles,
@@ -240,6 +240,7 @@ type
       DesignModifiedBeforePhysicsRun: Boolean;
       FCurrentViewport: TCastleViewport;
       FCurrentViewportObserver: TFreeNotificationObserver;
+      FComponentEditorDesigner: TComponentEditorDesigner;
 
     { Create and add to the designed parent a new component,
       whose type best matches currently selected file in SourceShellList.
@@ -368,8 +369,6 @@ type
     procedure UpdateAnchors(const UI: TCastleUserInterface;
       const AllowToHideParentAnchorsFrame: Boolean);
     procedure ChangeMode(const NewMode: TMode);
-    procedure ModifiedOutsideObjectInspector(const UndoComment: String;
-      const UndoCommentPriority: TUndoCommentPriority; const UndoOnRelease: Boolean = false);
     { Filter property in object inspector.
       When FilterBySection = true, then Section matters and only properties in this section
       are displayed. }
@@ -437,6 +436,9 @@ type
     procedure RecordUndo(const UndoComment: String;
       const UndoCommentPriority: TUndoCommentPriority; const ItemIndex: Integer = -1);
 
+    procedure ModifiedOutsideObjectInspector(const UndoComment: String;
+      const UndoCommentPriority: TUndoCommentPriority; const UndoOnRelease: Boolean = false);
+
     procedure SaveSelected;
 
     procedure CurrentComponentApiUrl(var Url: String);
@@ -478,7 +480,7 @@ uses
   Castle2DSceneManager, CastleNotifications, CastleThirdPersonNavigation, CastleSoundEngine,
   CastleBehaviors,
   { Editor units }
-  EditorUtils, FormProject;
+  EditorUtils, FormProject, CastleComponentEditorDesigner;
 
 {$R *.lfm}
 
@@ -1218,6 +1220,8 @@ begin
 
   PropertyEditorHook := TPropertyEditorHook.Create(Self);
 
+  FComponentEditorDesigner := TCastleComponentEditorDesigner.Create(Self, PropertyEditorHook);
+
   FUndoSystem := TUndoSystem.Create(Self);
 
   Inspector[itBasic] := CommonInspectorCreate;
@@ -1299,6 +1303,7 @@ var
 begin
   FreeAndNil(TreeNodeMap);
   FreeAndNil(CameraPreview);
+  FreeAndNil(FComponentEditorDesigner);
 
   if CollectionPropertyEditorForm <> nil then
   begin
@@ -4565,10 +4570,66 @@ begin
 end;
 
 procedure TDesignFrame.MenuTreeViewPopup(Sender: TObject);
+
+  procedure ClearComponentEditorVerbs;
+  begin
+    { remove all TMenuItemToExecuteVerb }
+    while (MenuTreeView.Items.Count > 0) and
+          (MenuTreeView.Items[0] is TMenuItemToExecuteVerb) do
+      MenuTreeView.Items[0].Free;
+
+    { remove separator }
+    if (MenuTreeView.Items.Count > 0) and
+       (MenuTreeView.Items[0].Caption = '-') then
+      MenuTreeView.Items[0].Free;
+  end;
+
+  procedure AddComponentEditorVerbs(const C: TComponent);
+  var
+    E: TBaseComponentEditor;
+    I: Integer;
+    MenuItem: TMenuItemToExecuteVerb;
+    MenuItemSeparator: TMenuItem;
+    InsertedVerbs: Cardinal;
+  begin
+    E := GetComponentEditor(C, FComponentEditorDesigner);
+    if E <> nil then
+    begin
+      InsertedVerbs := 0;
+      for I := 0 to E.GetVerbCount - 1 do
+      begin
+        { Ignore "Create default event" that we couldn't handle now,
+          as our designer cannot initialize Code Tools to insert the event in code. }
+        if E.GetVerb(I) = oisCreateDefaultEvent then
+          Continue;
+        MenuItem := TMenuItemToExecuteVerb.Create(Self);
+        MenuItem.Caption := E.GetVerb(I);
+        MenuItem.VerbIndex := I;
+        MenuItem.ComponentEditor := E;
+        MenuItem.ComponentToExecute := C;
+        MenuTreeView.Items.Insert(InsertedVerbs, MenuItem);
+        Inc(InsertedVerbs);
+      end;
+
+      { add separator if needed }
+      if InsertedVerbs <> 0 then
+      begin
+        MenuItemSeparator := TMenuItem.Create(Self);
+        MenuItemSeparator.Caption := '-';
+        MenuTreeView.Items.Insert(InsertedVerbs, MenuItemSeparator);
+      end;
+    end;
+  end;
+
 var
   Sel: TComponent;
 begin
   Sel := SelectedComponent;
+
+  ClearComponentEditorVerbs;
+  if Sel <> nil then
+    AddComponentEditorVerbs(Sel);
+
   MenuTreeViewItemRename.Enabled := RenamePossible;
   MenuTreeViewItemDuplicate.Enabled := Sel <> nil;
   MenuTreeViewItemCut.Enabled := Sel <> nil;

@@ -50,7 +50,7 @@ uses // FPC and LCL units
   CastleVectors, CastleUtils, CastleColors, CastleViewport, CastleDialogs,
   CastleTiledMap, CastleGLImages, CastleStringUtils, CastleFilesUtils,
   CastleInternalExposeTransformsDialog, CastleSoundEngine, CastleFonts,
-  CastleScriptParser, CastleInternalLclDesign, CastleTerrain, CastleRenderOptions;
+  CastleScriptParser, CastleInternalLclDesign, CastleTerrain, CastleRenderOptions, CastleLog;
 
 {$define read_implementation}
 {$I castlepropedits_url.inc}
@@ -66,6 +66,10 @@ uses // FPC and LCL units
 {$I castlepropedits_number.inc}
 {$I castlepropedits_exposetransforms.inc}
 {$I castlepropedits_rangeset.inc}
+{$I castlepropedits_component_transform.inc}
+{$I castlepropedits_component_scene.inc}
+{$I castlepropedits_component_imagetransform.inc}
+{$I castlepropedits_component_imagecontrol.inc}
 {$undef read_implementation}
 
 procedure Register;
@@ -166,6 +170,10 @@ begin
     T3DCoordsRangeSetPropertyEditor);
   RegisterPropertyEditor(TypeInfo(T3DCoords), TCastleRigidBody, 'LockRotation',
     T3DCoordsRangeSetPropertyEditor);
+  RegisterComponentEditor(TCastleTransform, TCastleTransformComponentEditor);
+  RegisterComponentEditor(TCastleScene, TCastleSceneComponentEditor);
+  RegisterComponentEditor(TCastleImageTransform, TCastleImageTransformComponentEditor);
+  RegisterComponentEditor(TCastleImageControl, TCastleImageControlComponentEditor);
 end;
 
 initialization

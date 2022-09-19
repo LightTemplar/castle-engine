@@ -47,8 +47,8 @@ This package, castle_components.lpk, contains the Lazarus visual components that
 This is the same license as used by Lazarus LCL and FPC RTL.
 See https://castle-engine.io/license.php for details.
 "/>
-    <Version Major="6" Minor="5"/>
-    <Files Count="17">
+    <Version Major="6" Minor="93"/>
+    <Files Count="18">
       <Item1>
         <Filename Value="../src/lcl/castlecontrol.pas"/>
         <HasRegisterProc Value="True"/>
@@ -93,7 +93,7 @@ See https://castle-engine.io/license.php for details.
         <Type Value="Include"/>
       </Item10>
       <Item11>
-        <Filename Value="../src/lcl/castlepropedits_float.inc"/>
+        <Filename Value="../src/lcl/castlepropedits_number.inc"/>
         <Type Value="Include"/>
       </Item11>
       <Item12>
@@ -120,6 +120,11 @@ See https://castle-engine.io/license.php for details.
         <Filename Value="../src/lcl/castlepropedits_autoanimation.inc"/>
         <Type Value="Include"/>
       </Item17>
+      <Item18>
+        <Filename Value="../src/lcl/castleinternallcldesign.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="CastleInternalLclDesign"/>
+      </Item18>
     </Files>
     <CompatibilityMode Value="True"/>
     <RequiredPkgs Count="4">

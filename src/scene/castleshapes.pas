@@ -45,6 +45,7 @@ const
     MaxDepth: DefLocalTriangleOctreeMaxDepth;
     LeafCapacity: DefLocalTriangleOctreeLeafCapacity
   );
+  aaaaaaaaaa=10;
 
 type
   { Possible spatial structure types that may be managed by TShape,

@@ -50,7 +50,8 @@ uses // FPC and LCL units
   CastleVectors, CastleUtils, CastleColors, CastleViewport, CastleDialogs,
   CastleTiledMap, CastleGLImages, CastleStringUtils, CastleFilesUtils,
   CastleInternalExposeTransformsDialog, CastleSoundEngine, CastleFonts,
-  CastleScriptParser, CastleInternalLclDesign, CastleTerrain, CastleRenderOptions, CastleLog;
+  CastleScriptParser, CastleInternalLclDesign, CastleTerrain, CastleRenderOptions, 
+  CastleEditorAccess, CastleLog;
 
 {$define read_implementation}
 {$I castlepropedits_url.inc}
@@ -70,6 +71,8 @@ uses // FPC and LCL units
 {$I castlepropedits_component_scene.inc}
 {$I castlepropedits_component_imagetransform.inc}
 {$I castlepropedits_component_imagecontrol.inc}
+{$I castlepropedits_component_transformdesign.inc}
+{$I castlepropedits_component_design.inc}
 {$undef read_implementation}
 
 procedure Register;
@@ -174,6 +177,8 @@ begin
   RegisterComponentEditor(TCastleScene, TCastleSceneComponentEditor);
   RegisterComponentEditor(TCastleImageTransform, TCastleImageTransformComponentEditor);
   RegisterComponentEditor(TCastleImageControl, TCastleImageControlComponentEditor);
+  RegisterComponentEditor(TCastleTransformDesign, TCastleTransformDesignComponentEditor);
+  RegisterComponentEditor(TCastleDesign, TCastleDesignComponentEditor);
 end;
 
 initialization
